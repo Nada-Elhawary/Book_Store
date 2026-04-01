@@ -4,6 +4,7 @@ const express = require("express");
 const { errorHandler } = require("./middleware/errorMiddleware");
 const userRoutes = require("./routes/userRoutes");
 const bookRouter = require("./routes/bookRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 const app = express();
 
 app.use(express.json());
@@ -14,6 +15,7 @@ app.get("/", (req, res) => {
 
 app.use(userRoutes);
 app.use("/api/books", bookRouter);
+app.use("/api/orders", orderRoutes);
 //==========================
 // Catch-all 404 route
 //==========================
