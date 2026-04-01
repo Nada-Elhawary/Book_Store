@@ -2,7 +2,7 @@ const Book = require("../models/Book");
 const Order = require("../models/Order");
 
 //-------------------Rent Book-----------------------//
-const rentBook = async (req, res) => {
+const rentBook = async (req, res, next) => {
     try {
         const bookId = req.params.bookId;
         const book = await Book.findById(bookId);
@@ -21,9 +21,21 @@ const rentBook = async (req, res) => {
             });
         }
 
-        book.availableCopies--;
+        const alreadyRented = await Order.findOne({
+            user: req.user.id,
+            book: bookId,
+            status: "rented",
+        });
 
-        await book.save();
+        if (alreadyRented)
+            return res.status(400).json({
+                status: 400,
+                message: "You already rented this book"
+            });
+
+        await Book.findByIdAndUpdate(bookId, {
+            $inc: { availableCopies: -1 },
+        });
 
         const order = await Order.create({
             user: req.user.id,
@@ -32,14 +44,13 @@ const rentBook = async (req, res) => {
 
         res.status(201).json({
             status: 201,
-            message: "Order done successfully",
+            message: "Book rented successfully",
             data: order
-        })
+        });
+
+
     } catch (err) {
-        res.status(500).json({
-            status: 500,
-            message: err.message
-        })
+        next(err);
     }
 };
 
@@ -56,6 +67,13 @@ const returnBook = async (req, res) => {
             });
         }
 
+        if (order.user.toString() !== req.user.id) {
+            return res.status(403).json({
+                status: 403,
+                message: "Not allowed to return this order!",
+            });
+        }
+
         if (order.status === "returned") {
             return res.status(400).json({
                 status: 400,
@@ -65,9 +83,16 @@ const returnBook = async (req, res) => {
 
         const book = await Book.findById(order.book);
 
-        book.availableCopies++;
+        if (!book) {
+            return res.status(404).json({
+                status: 404,
+                message: "Book not found",
+            });
+        }
 
-        await book.save();
+        await Book.findByIdAndUpdate(bookId, {
+            $inc: { availableCopies: +1 },
+        });
 
         order.status = "returned";
         order.returnedAt = Date.now();
@@ -79,37 +104,45 @@ const returnBook = async (req, res) => {
             message: "Book returned successfully"
         });
     } catch (err) {
-        res.status(500).json({
-            status: 500,
-            message: err.message
-        });
+        next(err);
     }
 };
 
 //------------------Get User Rentals-----------------//
-const getMyOrders = async (req, res) => {
-    const orders = await Order.find({
-        user: req.user.id
-    }).populate("book");
+const getMyOrders = async (req, res, next) => {
+    try {
+        const orders = await Order.find({
+            user: req.user.id
+        })
+            .populate("book", "title author availableCopies")
+            .sort({ createdAt: -1 });
 
-    res.status(201).json({
-        status: 201,
-        message: "Get user order successfully",
-        data: orders
-    });
+        res.status(201).json({
+            status: 201,
+            message: "Get user order successfully",
+            data: orders
+        });
+    } catch (err) {
+        next(err);
+    }
 };
 
 //--------------Get All Rentals(Admin)---------------//
-const getAllOrders = async (req, res) => {
-    const orders = await Order.find()
-        .populate("user")
-        .populate("book");
+const getAllOrders = async (req, res, next) => {
+    try {
+        const orders = await Order.find()
+            .populate("user", "name email role")
+            .populate("book", "title author")
+            .sort({ createdAt: -1 });
 
-    res.status(201).json({
-        status: 201,
-        message: "Get All Orders successfully",
-        data: orders
-    });
+        res.status(201).json({
+            status: 201,
+            message: "Get All Orders successfully",
+            data: orders
+        });
+    } catch (err) {
+        next(err);
+    }
 
 };
 
