@@ -4,8 +4,12 @@ const {
   loginUser,
   getMe,
   adminCheck,
+  getAllUsers,
 } = require("../controllers/userController");
-const { authMiddleware, requireAdmin } = require("../middleware/authMiddleware");
+const {
+  authMiddleware,
+  requireAdmin,
+} = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -20,8 +24,7 @@ router.get("/api/users", (req, res) => {
 
 router.get("/api/users/register", (req, res) => {
   res.status(405).json({
-    message:
-      "Use POST (not GET). Body: raw JSON with name, email, password.",
+    message: "Use POST (not GET). Body: raw JSON with name, email, password.",
   });
 });
 
@@ -37,4 +40,5 @@ router.post("/api/users/login", loginUser);
 router.get("/api/users/me", authMiddleware, getMe);
 router.get("/api/users/admin-check", authMiddleware, requireAdmin, adminCheck);
 
+router.route("/api/users").get(authMiddleware, requireAdmin, getAllUsers);
 module.exports = router;
