@@ -13,7 +13,7 @@ const {
 
 const router = express.Router();
 
-router.get("/api/users", (req, res) => {
+router.get("/api/users/help", (req, res) => {
   res.json({
     register: "POST /api/users/register (JSON: name, email, password)",
     login: "POST /api/users/login (JSON: email, password)",
