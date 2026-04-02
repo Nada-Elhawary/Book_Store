@@ -19,6 +19,7 @@ router.get("/api/users/help", (req, res) => {
     login: "POST /api/users/login (JSON: email, password)",
     me: "GET /api/users/me (header: Authorization: Bearer <token>)",
     adminCheck: "GET /api/users/admin-check (Bearer token, admin only)",
+    getAllUsers: "GET /api/user/help",
   });
 });
 
