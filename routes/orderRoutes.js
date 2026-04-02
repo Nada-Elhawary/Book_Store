@@ -1,6 +1,9 @@
 const express = require("express");
 const order = require("../controllers/orderController");
-const { authMiddleware, requireAdmin } = require("../middleware/authMiddleware");
+const {
+  authMiddleware,
+  requireAdmin,
+} = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
