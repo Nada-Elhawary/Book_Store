@@ -90,7 +90,7 @@ const returnBook = async (req, res) => {
             });
         }
 
-        await Book.findByIdAndUpdate(bookId, {
+        await Book.findByIdAndUpdate(book, {
             $inc: { availableCopies: +1 },
         });
 
