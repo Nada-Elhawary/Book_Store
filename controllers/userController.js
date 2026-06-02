@@ -63,6 +63,7 @@ const registerUser = async (req, res, next) => {
     const token = generateToken(user._id.toString(), user.role);
 
     res.status(201).json({
+      token,
       user: toPublicUser(user),
     });
   } catch (err) {
