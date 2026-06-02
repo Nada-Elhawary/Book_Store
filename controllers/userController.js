@@ -2,6 +2,24 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, { __v: false, password: false });
+
+    res.status(200).json({
+      status: 200,
+      message: "All Users Received Successfully",
+      data: users,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      status: 500,
+      message: "Server Error",
+      data: err.message,
+    });
+  }
+};
+
 const generateToken = (id, role) => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
@@ -103,6 +121,7 @@ const adminCheck = (req, res) => {
 };
 
 module.exports = {
+  getAllUsers,
   registerUser,
   loginUser,
   getMe,
