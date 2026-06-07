@@ -2,19 +2,19 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Library, ShieldCheck, Zap, BookOpen, Star, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Library, ShieldCheck, Zap, CheckCircle2 } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { PublicFooter } from "@/components/layout/PublicFooter";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
 
-const fadeIn = {
+const fadeIn: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
 };
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,

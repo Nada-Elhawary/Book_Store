@@ -13,9 +13,16 @@ const orderRoutes = require("./routes/orderRoutes");
 
 const app = express();
 
+// Trust proxy is required for rate limiting when behind Vercel/proxies
+app.set("trust proxy", 1);
+
 // Global Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "*",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  credentials: true
+}));
 app.use(morgan("dev"));
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
