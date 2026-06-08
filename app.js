@@ -44,7 +44,13 @@ app.use("/api", limiter);
 
 // Routes
 app.get("/", (req, res) => {
-  res.send("API is running...");
+  res.json({
+    message: "API is running...",
+    hasMongoUri: !!process.env.MONGO_URI,
+    mongoUriMasked: process.env.MONGO_URI ? process.env.MONGO_URI.replace(/:[^@]+@/, ":****@") : null,
+    hasJwtSecret: !!process.env.JWT_SECRET,
+    isVercel: !!process.env.VERCEL
+  });
 });
 
 app.use("/api/users", userRoutes);
