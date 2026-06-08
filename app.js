@@ -19,7 +19,7 @@ app.set("trust proxy", 1);
 // Global Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "*",
+  origin: process.env.FRONTEND_URL || "http://localhost:3000",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true
 }));
