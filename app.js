@@ -19,8 +19,12 @@ app.set("trust proxy", 1);
 // Global Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  origin: [
+    process.env.FRONTEND_URL,
+    "http://localhost:3000",
+    "http://localhost:3001"
+  ].filter(Boolean),
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   credentials: true
 }));
 // app.options("*", cors());
@@ -43,7 +47,7 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-app.use(userRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/books", bookRouter);
 app.use("/api/orders", orderRoutes);
 

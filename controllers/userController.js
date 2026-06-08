@@ -36,19 +36,16 @@ const registerUser = async (req, res, next) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      res.status(400);
-      return next(new Error("Please provide name, email, and password"));
+      return res.status(400).json({ message: "Please provide name, email, and password" });
     }
 
     if (password.length < 6) {
-      res.status(400);
-      return next(new Error("Password must be at least 6 characters"));
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
     const existing = await User.findOne({ email: email.toLowerCase().trim() });
     if (existing) {
-      res.status(400);
-      return next(new Error("User already exists with this email"));
+      return res.status(400).json({ message: "User already exists with this email" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -67,7 +64,8 @@ const registerUser = async (req, res, next) => {
       user: toPublicUser(user),
     });
   } catch (err) {
-    next(err);
+    console.error("Register Error:", err);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -76,20 +74,17 @@ const loginUser = async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      res.status(400);
-      return next(new Error("Please provide email and password"));
+      return res.status(400).json({ message: "Please provide email and password" });
     }
 
     const user = await User.findOne({ email: email.toLowerCase().trim() });
     if (!user) {
-      res.status(401);
-      return next(new Error("Invalid email or password"));
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
-      res.status(401);
-      return next(new Error("Invalid email or password"));
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const token = generateToken(user._id.toString(), user.role);
@@ -99,7 +94,8 @@ const loginUser = async (req, res, next) => {
       user: toPublicUser(user),
     });
   } catch (err) {
-    next(err);
+    console.error("Login Error:", err);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -107,12 +103,12 @@ const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
     if (!user) {
-      res.status(404);
-      return next(new Error("User not found"));
+      return res.status(404).json({ message: "User not found" });
     }
     res.json(toPublicUser(user));
   } catch (err) {
-    next(err);
+    console.error("GetMe Error:", err);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
