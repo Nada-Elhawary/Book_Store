@@ -19,10 +19,11 @@ app.set("trust proxy", 1);
 // Global Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  origin: process.env.FRONTEND_URL,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true
 }));
+// app.options("*", cors());
 app.use(morgan("dev"));
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
