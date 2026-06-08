@@ -10,6 +10,7 @@ const { errorHandler } = require("./middleware/errorMiddleware");
 const userRoutes = require("./routes/userRoutes");
 const bookRouter = require("./routes/bookRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const connectDB = require("./config/db");
 
 const app = express();
 
@@ -31,6 +32,17 @@ app.use(cors({
 app.use(morgan("dev"));
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// Database connection middleware (Serverless safe)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error("Database connection middleware error:", err);
+    res.status(500).json({ message: "Database connection failed: " + (err.message || "Unknown error") });
+  }
+});
 
 // Rate Limiting
 const limiter = rateLimit({
