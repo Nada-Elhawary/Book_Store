@@ -16,6 +16,7 @@ const connectDB = async () => {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      family: 4, // Force IPv4 to prevent IPv6 DNS issues on serverless platforms
     };
 
     console.log("Creating new MongoDB connection");
