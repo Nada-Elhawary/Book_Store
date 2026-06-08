@@ -43,32 +43,10 @@ const limiter = rateLimit({
 app.use("/api", limiter);
 
 // Routes
-app.get("/", async (req, res) => {
-  const connectDB = require("./config/db");
-  const startTime = Date.now();
-  let dbStatus = "Not attempted";
-  let dbError = null;
-
-  try {
-    console.log("Diagnostics: Attempting database connection...");
-    const conn = await connectDB();
-    dbStatus = `Connected successfully to host: ${conn.host || "unknown"}`;
-  } catch (err) {
-    dbStatus = "Failed to connect";
-    dbError = err.message || err.toString();
-  }
-
+app.get("/", (req, res) => {
   res.json({
     message: "API is running...",
-    database: {
-      status: dbStatus,
-      error: dbError,
-      durationMs: Date.now() - startTime
-    },
-    hasMongoUri: !!process.env.MONGO_URI,
-    mongoUriMasked: process.env.MONGO_URI ? process.env.MONGO_URI.replace(/:[^@]+@/, ":****@") : null,
-    hasJwtSecret: !!process.env.JWT_SECRET,
-    isVercel: !!process.env.VERCEL
+    status: "healthy"
   });
 });
 
