@@ -21,7 +21,7 @@ const handler = async (req, res) => {
     return app(req, res);
   } catch (error) {
     console.error("Serverless handler error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error: " + (error.message || "Unknown error") });
   }
 };
 
