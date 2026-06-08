@@ -13,7 +13,7 @@ const {
 
 const router = express.Router();
 
-router.get("/api/users/help", (req, res) => {
+router.get("/help", (req, res) => {
   res.json({
     register: "POST /api/users/register (JSON: name, email, password)",
     login: "POST /api/users/login (JSON: email, password)",
@@ -23,23 +23,23 @@ router.get("/api/users/help", (req, res) => {
   });
 });
 
-router.get("/api/users/register", (req, res) => {
+router.get("/register", (req, res) => {
   res.status(405).json({
     message: "Use POST (not GET). Body: raw JSON with name, email, password.",
   });
 });
 
-router.get("/api/users/login", (req, res) => {
+router.get("/login", (req, res) => {
   res.status(405).json({
     message: "Use POST (not GET). Body: raw JSON with email, password.",
   });
 });
 
-router.post("/api/users/register", registerUser);
-router.post("/api/users/login", loginUser);
+router.post("/register", registerUser);
+router.post("/login", loginUser);
 
-router.get("/api/users/me", authMiddleware, getMe);
-router.get("/api/users/admin-check", authMiddleware, requireAdmin, adminCheck);
+router.get("/me", authMiddleware, getMe);
+router.get("/admin-check", authMiddleware, requireAdmin, adminCheck);
 
-router.route("/api/users").get(authMiddleware, requireAdmin, getAllUsers);
+router.route("/").get(authMiddleware, requireAdmin, getAllUsers);
 module.exports = router;

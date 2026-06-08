@@ -49,7 +49,8 @@ const rentBook = async (req, res, next) => {
             data: order
         });
     } catch (err) {
-        next(err);
+        console.error("Rent Error:", err);
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
@@ -103,7 +104,8 @@ const returnBook = async (req, res, next) => {
             message: "Book returned successfully"
         });
     } catch (err) {
-        next(err);
+        console.error("Return Error:", err);
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
@@ -122,7 +124,8 @@ const getMyOrders = async (req, res, next) => {
             data: orders
         });
     } catch (err) {
-        next(err);
+        console.error("GetMyOrders Error:", err);
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
@@ -140,7 +143,8 @@ const getAllOrders = async (req, res, next) => {
             data: orders
         });
     } catch (err) {
-        next(err);
+        console.error("GetAllOrders Error:", err);
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 };
 

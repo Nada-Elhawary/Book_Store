@@ -4,20 +4,17 @@ const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    res.status(401);
-    return next(new Error("Not authorized, no token"));
+    return res.status(401).json({ message: "Not authorized, no token" });
   }
 
   const token = authHeader.split(" ")[1];
   if (!token) {
-    res.status(401);
-    return next(new Error("Not authorized, no token"));
+    return res.status(401).json({ message: "Not authorized, no token" });
   }
 
   try {
     if (!process.env.JWT_SECRET) {
-      res.status(500);
-      return next(new Error("Server configuration error"));
+      return res.status(500).json({ message: "Server configuration error" });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -27,18 +24,16 @@ const authMiddleware = (req, res, next) => {
     };
     next();
   } catch (err) {
-    res.status(401);
     if (err.name === "TokenExpiredError") {
-      return next(new Error("Not authorized, token expired"));
+      return res.status(401).json({ message: "Not authorized, token expired" });
     }
-    return next(new Error("Not authorized, invalid token"));
+    return res.status(401).json({ message: "Not authorized, invalid token" });
   }
 };
 
 const requireAdmin = (req, res, next) => {
   if (!req.user || req.user.role !== "admin") {
-    res.status(403);
-    return next(new Error("Access denied: admin role required"));
+    return res.status(403).json({ message: "Access denied: admin role required" });
   }
   next();
 };
