@@ -8,30 +8,36 @@ if (!cached) {
 }
 
 const connectDB = async () => {
-  if (cached.conn) {
-    console.log("Using cached MongoDB connection");
-    return cached.conn;
+  // Check if we have an active connection
+  if (mongoose.connection.readyState === 1) {
+    console.log("Using active cached MongoDB connection");
+    return mongoose.connection;
   }
 
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-      family: 4, // Force IPv4 to prevent IPv6 DNS issues on serverless platforms
-    };
-
-    console.log("Creating new MongoDB connection");
-    cached.promise = mongoose.connect(process.env.MONGO_URI, opts).then((mongoose) => {
-      return mongoose;
-    });
+  // If connection is in the process of connecting, await the existing promise
+  if (cached.promise && mongoose.connection.readyState === 2) {
+    console.log("Awaiting existing MongoDB connection promise");
+    return cached.promise;
   }
+
+  const opts = {
+    bufferCommands: false,
+    family: 4, // Force IPv4 to prevent IPv6 DNS issues on serverless platforms
+  };
+
+  console.log("Creating new MongoDB connection");
+  cached.promise = mongoose.connect(process.env.MONGO_URI, opts).then((mongooseInstance) => {
+    return mongooseInstance.connection;
+  });
 
   try {
     cached.conn = await cached.promise;
-    console.log(`MongoDB Connected: ${cached.conn.connection.host}`);
+    console.log(`MongoDB Connected: ${mongoose.connection.host}`);
   } catch (error) {
     cached.promise = null;
+    cached.conn = null;
     console.error("DB Error:", error.message);
-    throw error; // Throw error instead of process.exit(1) in serverless context
+    throw error;
   }
 
   return cached.conn;
