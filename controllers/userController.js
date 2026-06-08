@@ -33,7 +33,7 @@ const toPublicUser = (userDoc) => ({
 
 const registerUser = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body || {};
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: "Please provide name, email, and password" });
@@ -65,13 +65,13 @@ const registerUser = async (req, res, next) => {
     });
   } catch (err) {
     console.error("Register Error:", err);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error: " + (err.message || "Unknown error") });
   }
 };
 
 const loginUser = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
 
     if (!email || !password) {
       return res.status(400).json({ message: "Please provide email and password" });
@@ -95,7 +95,7 @@ const loginUser = async (req, res, next) => {
     });
   } catch (err) {
     console.error("Login Error:", err);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error: " + (err.message || "Unknown error") });
   }
 };
 
@@ -108,7 +108,7 @@ const getMe = async (req, res, next) => {
     res.json(toPublicUser(user));
   } catch (err) {
     console.error("GetMe Error:", err);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error: " + (err.message || "Unknown error") });
   }
 };
 
